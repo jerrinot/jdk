@@ -24935,33 +24935,9 @@ instruct mask_not_immLT8(kReg dst, kReg src, rRegI rtmp, kReg ktmp, immI_M1 cnt)
   ins_pipe( pipe_slow );
 %}
 
-instruct mask_not_immLT8_commute(kReg dst, kReg src, rRegI rtmp, kReg ktmp, immI_M1 cnt) %{
-  predicate(Matcher::vector_length(n) < 8 && VM_Version::supports_avx512dq());
-  match(Set dst (XorVMask (MaskAll cnt) src));
-  effect(TEMP_DEF dst, TEMP rtmp, TEMP ktmp);
-  format %{ "mask_not_LT8 $dst, $src, $cnt \t!using $ktmp and $rtmp as TEMP" %}
-  ins_encode %{
-    uint masklen = Matcher::vector_length(this);
-    __ knot(masklen, $dst$$KRegister, $src$$KRegister, $ktmp$$KRegister, $rtmp$$Register);
-  %}
-  ins_pipe( pipe_slow );
-%}
-
 instruct mask_not_immLT8L(kReg dst, kReg src, rRegI rtmp, kReg ktmp, immL_M1 cnt) %{
   predicate(Matcher::vector_length(n) < 8 && VM_Version::supports_avx512dq());
   match(Set dst (XorVMask src (MaskAll cnt)));
-  effect(TEMP_DEF dst, TEMP rtmp, TEMP ktmp);
-  format %{ "mask_not_LT8 $dst, $src, $cnt \t!using $ktmp and $rtmp as TEMP" %}
-  ins_encode %{
-    uint masklen = Matcher::vector_length(this);
-    __ knot(masklen, $dst$$KRegister, $src$$KRegister, $ktmp$$KRegister, $rtmp$$Register);
-  %}
-  ins_pipe( pipe_slow );
-%}
-
-instruct mask_not_immLT8L_commute(kReg dst, kReg src, rRegI rtmp, kReg ktmp, immL_M1 cnt) %{
-  predicate(Matcher::vector_length(n) < 8 && VM_Version::supports_avx512dq());
-  match(Set dst (XorVMask (MaskAll cnt) src));
   effect(TEMP_DEF dst, TEMP rtmp, TEMP ktmp);
   format %{ "mask_not_LT8 $dst, $src, $cnt \t!using $ktmp and $rtmp as TEMP" %}
   ins_encode %{
@@ -24984,37 +24960,11 @@ instruct mask_not_imm(kReg dst, kReg src, immI_M1 cnt) %{
   ins_pipe( pipe_slow );
 %}
 
-instruct mask_not_imm_commute(kReg dst, kReg src, immI_M1 cnt) %{
-  predicate((Matcher::vector_length(n) == 8 && VM_Version::supports_avx512dq()) ||
-            (Matcher::vector_length(n) == 16) ||
-            (Matcher::vector_length(n) > 16 && VM_Version::supports_avx512bw()));
-  match(Set dst (XorVMask (MaskAll cnt) src));
-  format %{ "mask_not $dst, $src, $cnt \t! mask not operation" %}
-  ins_encode %{
-    uint masklen = Matcher::vector_length(this);
-    __ knot(masklen, $dst$$KRegister, $src$$KRegister);
-  %}
-  ins_pipe( pipe_slow );
-%}
-
 instruct mask_not_immL(kReg dst, kReg src, immL_M1 cnt) %{
   predicate((Matcher::vector_length(n) == 8 && VM_Version::supports_avx512dq()) ||
             (Matcher::vector_length(n) == 16) ||
             (Matcher::vector_length(n) > 16 && VM_Version::supports_avx512bw()));
   match(Set dst (XorVMask src (MaskAll cnt)));
-  format %{ "mask_not $dst, $src, $cnt \t! mask not operation" %}
-  ins_encode %{
-    uint masklen = Matcher::vector_length(this);
-    __ knot(masklen, $dst$$KRegister, $src$$KRegister);
-  %}
-  ins_pipe( pipe_slow );
-%}
-
-instruct mask_not_immL_commute(kReg dst, kReg src, immL_M1 cnt) %{
-  predicate((Matcher::vector_length(n) == 8 && VM_Version::supports_avx512dq()) ||
-            (Matcher::vector_length(n) == 16) ||
-            (Matcher::vector_length(n) > 16 && VM_Version::supports_avx512bw()));
-  match(Set dst (XorVMask (MaskAll cnt) src));
   format %{ "mask_not $dst, $src, $cnt \t! mask not operation" %}
   ins_encode %{
     uint masklen = Matcher::vector_length(this);
